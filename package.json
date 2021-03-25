@@ -1,0 +1,55 @@
+{
+  "name": "ele-insunet",
+  "version": "1.2.2",
+  "description": "insunet fc device manager",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "keywords": [],
+  "author": "INSUNET-FC",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^11.2.1",
+    "electron-builder": "^22.9.1"
+  },
+  "build": {
+    "asar": true,
+    "appId": "com.insunetfcdvm.app",
+    "productName": "insunetFCDVM",
+    "artifactName": "insunetFCDVM-${version}.${ext}",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "./src/assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "installerIcon": "./src/assets/icon.ico",
+      "createDesktopShortcut": false,
+      "deleteAppDataOnUninstall": true
+    },
+    "mac": {
+      "target": [
+        "pkg"
+      ],
+      "icon": "./src/assets/icon.icns",
+      "category": "public.app-category.productivity"
+    }
+  },
+  "dependencies": {
+    "electron-is-dev": "^2.0.0",
+    "hddserial": "^0.0.7",
+    "moment": "^2.29.1",
+    "socket.io": "^3.1.0"
+  }
+}
