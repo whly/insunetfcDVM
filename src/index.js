@@ -1,7 +1,9 @@
 const { app, BrowserWindow, Tray, Menu ,nativeImage, dialog } = require('electron');
-//const { MacUpdater, NsisUpdater } = require("electron-updater");
-require('./main.js');
 const isDev = require('electron-is-dev');
+const AppUpdater = require("./appUpdater.js");
+if (!isDev) AppUpdater();
+require('./main.js');
+
 
 const path = require('path');
 let tray = null

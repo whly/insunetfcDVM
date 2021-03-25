@@ -1,6 +1,6 @@
 {
   "name": "ele-insunet",
-  "version": "1.2.2",
+  "version": "1.2.5",
   "description": "insunet fc device manager",
   "main": "src/index.js",
   "scripts": {
@@ -15,6 +15,13 @@
     "electron-builder": "^22.9.1"
   },
   "build": {
+    "files": [
+      "!build/*"
+    ],
+    "publish": [{
+      "provider": "generic",
+      "url": "https://insunetfc-device-manager.s3.ap-northeast-2.amazonaws.com"
+    }],
     "asar": true,
     "appId": "com.insunetfcdvm.app",
     "productName": "insunetFCDVM",
@@ -48,6 +55,8 @@
   },
   "dependencies": {
     "electron-is-dev": "^2.0.0",
+    "electron-log": "^4.3.2",
+    "electron-updater": "^4.3.8",
     "hddserial": "^0.0.7",
     "moment": "^2.29.1",
     "socket.io": "^3.1.0"

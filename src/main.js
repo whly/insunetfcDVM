@@ -61,7 +61,6 @@ async function getHddSerial() {
         })
       }else{
         if(err) {
-          console.log(err, "do")
           reject("err")
           return;
         }
@@ -96,11 +95,10 @@ subRoom.on('connection', socket => {
         subRoom.emit('closeDialog')
       }
     }else if(data.type == "userData") {
-      console.log("SET USER DATA")
       let userData = data.value
       let extra = JSON.parse(userData.admin_extra)
       setUserExtra(extra)
-      if(extra.alarms)
+      if(extra && extra.alarms)
         setAlarms(extra.alarms)
     }
   })

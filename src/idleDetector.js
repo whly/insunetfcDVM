@@ -18,6 +18,10 @@ function setIdleTime(value) {
   idleTime = value
   idleDetected = false
 }
+function resetData() {
+  alertedList = []
+  idleDetected = false
+}
 function monitor(callBacks) {
   /* 09:00 ~ 12:00 AND 14:00 ~ 18:30 */
   let litAM = {
@@ -38,6 +42,7 @@ function monitor(callBacks) {
 
   if(!now.isBetween(litAM.start, litAM.end) && !now.isBetween(litPM.start, litPM.end)) return
 
+  /* 휴일이 아니며, 지정된 업무시간 범위내 인경우 */
   /* 자리비움 확인 */
   if(idleTime >= limitTime && !idleDetected) { 
     callBacks.idleDetectCallBack(idleTime)
@@ -52,7 +57,7 @@ function monitor(callBacks) {
   callBacks.idleCallBack(idleTime)
 
   /* 00:00시에 초기화: 혹시라도 24시간 PC를 켜놓는다는 가정하에. */
-  if(now.format("HH:mm") == "00:00") alertedList = []
+  if(now.format("HH:mm") == "00:00") resetData()
 }
 function checkAlarm() {
   let now = moment(new Date(), "HH:mm")
