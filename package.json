@@ -18,10 +18,12 @@
     "files": [
       "!build/*"
     ],
-    "publish": [{
-      "provider": "generic",
-      "url": "https://insunetfc-device-manager.s3.ap-northeast-2.amazonaws.com"
-    }],
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "https://insunetfc-device-manager.s3.ap-northeast-2.amazonaws.com"
+      }
+    ],
     "asar": true,
     "appId": "com.insunetfcdvm.app",
     "productName": "insunetFCDVM",
@@ -59,6 +61,8 @@
     "electron-updater": "^4.3.8",
     "hddserial": "^0.0.7",
     "moment": "^2.29.1",
+    "node-localdb-modern": "^1.0.1",
+    "request": "^2.88.2",
     "socket.io": "^3.1.0"
   }
 }

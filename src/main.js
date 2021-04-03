@@ -1,17 +1,35 @@
 const moment = require('moment');
 moment.locale('ko');
 
-const { init, setIdleTime, setAlarms, setUserExtra } = require('./idleDetector.js');
+const {
+  init,
+  setUserData,
+  setIdleTime,
+  setAlarms,
+  setUserExtra
+} = require('./idleDetector.js');
 init({
-  idleCallBack: (idleTime) => {
-    subRoom.emit('idleTime', idleTime)
-  },
+  /*idleCallBack: (idleTime) => {
+    idleRoom.emit('idleTime', idleTime)
+  },*/
   idleDetectCallBack: (idleTime) => {
-    subRoom.emit('idleDetect', idleTime)
+    idleRoom.emit('idleDetect', idleTime)
   },
   alarmCallback: (idleTime) => {
-    subRoom.emit('alarm', idleTime)
-  }
+    idleRoom.emit('alarm', idleTime)
+  },
+  
+  timeOverAlarmCallback: (idleTime) => {
+    idleRoom.emit('timeOver', idleTime)
+  },
+
+  firstAlertCallback: (idleTime) => {
+    idleRoom.emit('firstAlert', idleTime)
+  },
+  secondAlertCallback: (idleTime) => {
+    idleRoom.emit('secondAlert', idleTime)
+  },
+
 })
 const hddserial = require('hddserial');
 
@@ -77,9 +95,9 @@ const ioOptions = {
   }
 };
 const io = require('socket.io')(ioOptions);
-const mainRoom = io.of('/dvm');
-const subRoom = io.of('/idle');
-mainRoom.on('connection', socket => {
+const dvmRoom = io.of('/dvm');
+const idleRoom = io.of('/idle');
+dvmRoom.on('connection', socket => {
   socket.emit('version', require('electron').app.getVersion())
   socket.on("serial", () => {
     getHddSerial().then(res => {
@@ -87,19 +105,21 @@ mainRoom.on('connection', socket => {
     })
   })
 })
-subRoom.on('connection', socket => {
+idleRoom.on('connection', socket => {
   socket.on("event", (data) => {
     if(data.type == "resetIdleTime") {
       setIdleTime(0)
       if(data.value == "closeDialog") {
-        subRoom.emit('closeDialog')
+        idleRoom.emit('closeDialog')
       }
     }else if(data.type == "userData") {
-      let userData = data.value
+      /*let userData = data.value
       let extra = JSON.parse(userData.admin_extra)
       setUserExtra(extra)
       if(extra && extra.alarms)
         setAlarms(extra.alarms)
+      */
+      setUserData(data.value)
     }
   })
   socket.on("disconnect", (reason) => {

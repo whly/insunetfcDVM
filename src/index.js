@@ -4,7 +4,6 @@ const AppUpdater = require("./appUpdater.js");
 if (!isDev) AppUpdater();
 require('./main.js');
 
-
 const path = require('path');
 let tray = null
 let isQuit = false
@@ -21,7 +20,7 @@ const createWindow = () => {
     icon: image,
     //fullscreenable : false,
     webPreferences: {
-      nodeIntegration: true
+      contextIsolation: true
     }
   });
 
