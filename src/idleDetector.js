@@ -1,8 +1,9 @@
+const { app } = require('electron');
 const request = require('request')
 const moment = require('moment');
 moment.locale('ko');
 const db = require("node-localdb-modern");
-const user = db("./data/user.json");
+const user = db(`${app.getPath('userData')}/data/user.json`);
 let alertLog;
 const isDev = require('electron-is-dev');
 
@@ -79,7 +80,7 @@ function resetAlertStatus(type) {
 function resetData() {
   srDate = moment()
   alertedList = []
-  alertLog = db(`./data/${moment().format('YY-MM-DD')}/alertLog.json`);
+  alertLog = db(`${app.getPath('userData')}/data/${moment().format('YY-MM-DD')}/alertLog.json`);
   alertLog.update({ userCheck: false }, { userCheck: true });
 }
 async function monitor(callBacks) {
