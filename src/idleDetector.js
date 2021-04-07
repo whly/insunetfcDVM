@@ -38,26 +38,28 @@ function getUserData() {
     if(u) userData = u
   })
 }
-function setUserData (userData) {
-  user.findOne({adminId: userData._id}).then(function(u) {
+function setUserData (_userData) {
+  user.findOne({adminId: _userData._id}).then(function(u) {
     if(!u) {
-      let extra = JSON.parse(userData.admin_extra)
-      let adminName = userData.admin_name
+      let extra = JSON.parse(_userData.admin_extra)
+      let adminName = _userData.admin_name
       let useAlarm = (extra && extra.use_idle_alarm) ? true : false
       let alarms = (extra && extra.alarms) ? extra.alarms : null
-      user.insert({ adminId: userData._id, adminName: adminName, token: userData.token, useAlarm: useAlarm, alarms: alarms })
-      .then(function(u) {
+      user.insert({ adminId: _userData._id, adminName: adminName, token: _userData.token, useAlarm: useAlarm, alarms: alarms })
+      .then(function(u2) {
         //set UserData
-        userData = u
+        userData = u2
       });
     }else{
-      let extra = JSON.parse(userData.admin_extra)
-      let adminName = userData.admin_name
+      let extra = JSON.parse(_userData.admin_extra)
+      let adminName = _userData.admin_name
       let useAlarm = (extra && extra.use_idle_alarm) ? true : false
       let alarms = (extra && extra.alarms) ? extra.alarms : null
-      user.updateById(u._id, { adminId: userData._id, adminName: adminName, token: userData.token, useAlarm: useAlarm, alarms: alarms });
-      //set UserData
-      userData = u
+      user.updateById(u._id, { adminId: _userData._id, adminName: adminName, token: _userData.token, useAlarm: useAlarm, alarms: alarms })
+      .then(function (u2) {
+        //set UserData
+        userData = u2
+      })
     }
   });
 }
