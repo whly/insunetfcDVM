@@ -139,7 +139,7 @@ async function monitor(callBacks) {
         alertStatus.secondAlert = true
         try {
           let res = await createIdleAlertLog()
-          callBacks.secondAlertCallback(res._id) 
+          callBacks.secondAlertCallback(res) 
         }catch(err) {
           callBacks.secondAlertCallback(null)
         }

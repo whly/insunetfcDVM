@@ -1,6 +1,6 @@
 {
   "name": "ele-insunet",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "insunet fc device manager",
   "main": "src/index.js",
   "scripts": {
