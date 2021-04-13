@@ -9,7 +9,7 @@ const isDev = require('electron-is-dev');
 let idleTime = 0
 let limitTime = isDev ? 3  : 60 * 30 // 30분
 let userData = {
-  userId: null,
+  adminId: null,
   token: null,
   useAlarm: false,
   alarms: null,
@@ -21,11 +21,11 @@ let alertStatus = {
 let alertedList = []
 let mainInterval = null;
 
+let srDate = null
+let prDate = null
+
 function init(callBacks) {
   resetData()
-  alertLog.update({ userCheck: false }, { userCheck: true });
-  
-  //createIdleAlertLog()
   getUserData()
   mainInterval = setInterval(function () {
     monitor(callBacks)
@@ -34,27 +34,27 @@ function init(callBacks) {
 function getUserData() {
   // Todo: 
   user.findOne({}).then(u => {
-    console.log("[getUserData]", u);
     if(u) userData = u
   })
 }
 function setUserData (userData) {
-  user.findOne({userId: userData._id}).then(function(u) {
+  user.findOne({adminId: userData._id}).then(function(u) {
     if(!u) {
       let extra = JSON.parse(userData.admin_extra)
+      let adminName = userData.admin_name
       let useAlarm = (extra && extra.use_idle_alarm) ? true : false
       let alarms = (extra && extra.alarms) ? extra.alarms : null
-      user.insert({ userId: userData._id, token: userData.token, useAlarm: useAlarm, alarms: alarms })
+      user.insert({ adminId: userData._id, adminName: adminName, token: userData.token, useAlarm: useAlarm, alarms: alarms })
       .then(function(u) {
         //set UserData
         userData = u
       });
     }else{
-      console.log("FIND >> doUpdate", u);
       let extra = JSON.parse(userData.admin_extra)
+      let adminName = userData.admin_name
       let useAlarm = (extra && extra.use_idle_alarm) ? true : false
       let alarms = (extra && extra.alarms) ? extra.alarms : null
-      user.updateById(u._id, { userId: userData._id, token: userData.token, useAlarm: useAlarm, alarms: alarms });
+      user.updateById(u._id, { adminId: userData._id, adminName: adminName, token: userData.token, useAlarm: useAlarm, alarms: alarms });
       //set UserData
       userData = u
     }
@@ -77,8 +77,10 @@ function resetAlertStatus(type) {
   }
 }
 function resetData() {
+  srDate = moment()
   alertedList = []
   alertLog = db(`./data/${moment().format('YY-MM-DD')}/alertLog.json`);
+  alertLog.update({ userCheck: false }, { userCheck: true });
 }
 async function monitor(callBacks) {
   if(!checkRunable()) return
@@ -91,7 +93,7 @@ async function monitor(callBacks) {
   */  
   /* 자리비움 확인 (1단계 팝업) */
   if(!alertStatus.firstAlert) {
-    if(callBacks.firstAlertCallback && idleTime >= limitTime) { 
+    /*if(callBacks.firstAlertCallback && idleTime >= limitTime) { 
       alertLog.insert({
         alertDateTime: moment().format("YYYY-MM-DD HH:mm:ss"),
         alertTime: moment().format("HH:mm"),
@@ -101,7 +103,7 @@ async function monitor(callBacks) {
       })
       alertStatus.firstAlert = true
       callBacks.firstAlertCallback(idleTime)
-    }
+    }*/
     /* 알림 확인 (1단계 팝업) */
     if(callBacks.firstAlertCallback && userData.alarms) {
       if(checkAlarmSchedule()) {
@@ -132,9 +134,12 @@ async function monitor(callBacks) {
         })
         
         alertStatus.secondAlert = true
-        callBacks.secondAlertCallback(idleTime) 
-        createIdleAlertLog()
-
+        try {
+          let res = await createIdleAlertLog()
+          callBacks.secondAlertCallback(res._id) 
+        }catch(err) {
+          callBacks.secondAlertCallback(null)
+        }
         // 초기화 해줘야 2단계 알림후 여전히 자리비움인 경우에도 다시 지정알림을 띄울수있다.
         setIdleTime(0)
       }
@@ -145,9 +150,10 @@ async function monitor(callBacks) {
   /* 현재 IdleTime 전송 */
   if(callBacks.idleCallBack) callBacks.idleCallBack(idleTime)
 
-  /* 00:00시에 초기화: 혹시라도 24시간 PC를 켜놓는다는 가정하에. */
-  let now = moment(new Date(), "HH:mm")
-  if(now.format("HH:mm") == "00:00") resetData()
+  /* 하루 지날시 초기화 */
+  if(moment(new Date()).isAfter(srDate, 'day')) {
+    resetData()
+  }
 }
 function checkRunable() {
   if(isDev) return true
@@ -199,20 +205,28 @@ async function checkTimeOverAlarm() {
   }
 }
 function createIdleAlertLog() {
-  /*let params = {
-    admin_name:  this.$store.getters.user.admin_name,
-    admin_id: this.$store.getters.user._id,
+  let params = {
+    admin_name: userData.adminName,
+    admin_id: userData.adminId,
     idle_alert_date: new Date()
   }
   const options = {
-    uri:'http://dev-api2.insunetfc.com/v1/crm/idle.alert/create', 
+    url:'https://dev-api2.insunetfc.com/v1/crm/idle.alert/create', 
     method: 'POST',
     body: params,
+    headers: { 'content-type': 'application/json', 'authorization': 'bearer ' + userData.token },
     json: true
   }
-  request.post(options, function(err, httpResponse, body){ 
- 
-  })*/
+  return new Promise((resolve, reject) => {
+    request(options, function(err, httpResponse, body) {
+      let { data, error } = body
+      if(error) {
+        reject(error)
+        return
+      }
+      resolve(data._id)
+    })
+  })
 }
 
 module.exports = {

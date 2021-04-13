@@ -26,8 +26,8 @@ init({
   firstAlertCallback: (idleTime) => {
     idleRoom.emit('firstAlert', idleTime)
   },
-  secondAlertCallback: (idleTime) => {
-    idleRoom.emit('secondAlert', idleTime)
+  secondAlertCallback: (alertLogId) => {
+    idleRoom.emit('secondAlert', alertLogId)
   },
 
 })
