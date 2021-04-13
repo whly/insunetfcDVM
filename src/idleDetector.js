@@ -211,7 +211,7 @@ function createIdleAlertLog() {
   let params = {
     admin_name: userData.adminName,
     admin_id: userData.adminId,
-    idle_alert_date: new Date()
+    idle_alert_date: moment().format('YYYY-MM-DD HH:mm:ss')
   }
   const options = {
     url:'https://dev-api2.insunetfc.com/v1/crm/idle.alert/create', 
