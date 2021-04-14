@@ -1,38 +1,20 @@
-const { NsisUpdater } = require("electron-updater")
+const { dialog } = require('electron');
+const { autoUpdater } = require("electron-updater")
 module.exports = function AppUpdater() {
-  const options = {
-    autoDownload: false,
-    requestHeaders: {},
-    provider: 'generic',
-    url: 'https://insunetfc-device-manager.s3.ap-northeast-2.amazonaws.com'
-  }
-
-  const autoUpdater = new NsisUpdater(options)
   const log = require("electron-log")
   log.transports.file.level = "debug"
   autoUpdater.logger = log
-  
-  autoUpdater.on('checking-for-update', () => {
-    log.info('Checking for update...');
-  })
-  autoUpdater.on('update-available', (info) => {
-    log.info('Update available.');
-  })
-  autoUpdater.on('update-not-available', (info) => {
-    log.info('Update not available.');
-  })
-  autoUpdater.on('error', (err) => {
-    log.info('Error in auto-updater. ' + err);
-  })
-  autoUpdater.on('download-progress', (progressObj) => {
-    /*let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    sendStatusToWindow(log_message);*/
-  })
-  autoUpdater.on('update-downloaded', (info) => {
-    log.info('Update downloaded');
+  //다운로드 완료되면 업데이트
+  autoUpdater.on('update-downloaded', function(event, releaseNotes, releaseName) {
+    const dialogOpts = {
+        type: 'info',
+        buttons: ['확인'],
+        title: '업데이트 안내',
+        message: '프로그램을 최신버전으로 업데이트합니다.'
+    };
+    dialog.showMessageBox(dialogOpts).then(res => {
+      autoUpdater.quitAndInstall();
+    })
   });
-
-  autoUpdater.checkForUpdatesAndNotify()
+  autoUpdater.checkForUpdates()
 }
