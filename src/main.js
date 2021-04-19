@@ -8,28 +8,19 @@ const {
   setAlarms,
   setUserExtra
 } = require('./idleDetector.js');
+
 init({
+  /* 알림 모두 비활성화 */
   /*idleCallBack: (idleTime) => {
     idleRoom.emit('idleTime', idleTime)
   },*/
-  idleDetectCallBack: (idleTime) => {
-    idleRoom.emit('idleDetect', idleTime)
-  },
-  alarmCallback: (idleTime) => {
-    idleRoom.emit('alarm', idleTime)
-  },
   
-  timeOverAlarmCallback: (idleTime) => {
-    idleRoom.emit('timeOver', idleTime)
-  },
-
-  firstAlertCallback: (idleTime) => {
+  /*firstAlertCallback: (idleTime) => {
     idleRoom.emit('firstAlert', idleTime)
   },
   secondAlertCallback: (alertLogId) => {
     idleRoom.emit('secondAlert', alertLogId)
-  },
-
+  },*/
 })
 const hddserial = require('hddserial');
 

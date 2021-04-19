@@ -124,7 +124,7 @@ async function monitor(callBacks) {
   }
   /* 1단계 알림 이후 10분이 경과했는지 확인 (2단계 팝업) */
   if(alertStatus.firstAlert && !alertStatus.secondAlert) {
-    if(callBacks.timeOverAlarmCallback) { 
+    if(callBacks.secondAlertCallback) { 
       let res = await checkTimeOverAlarm()
       if(res) {
         alertLog.update({ userCheck: false }, { userCheck: true });

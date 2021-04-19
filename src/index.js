@@ -50,7 +50,6 @@ const createWindow = () => {
   tray.setContextMenu(contextMenu)
 };
 app.whenReady().then(() => {
-  console.log("Ready")
   createWindow()
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
